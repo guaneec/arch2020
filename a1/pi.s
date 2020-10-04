@@ -1,128 +1,137 @@
+
 # RISC-V
 
 .data
-argument: .word 100 # number of digits to calculate
+arr: .half 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2
+pred: .byte 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 
 .text
 main:
-	lw  a0, argument   # Load argument from static data
-    addi a0 a0 1
-	# m = n * 10 / 3
+	addi sp sp -32
+	sw s0 0(sp)
+	sw s1 4(sp)
+	sw s2 8(sp)
+	sw s3 12(sp)
+	sw s4 16(sp)
+	sw s5 20(sp)
+	sw s6 24(sp)
+	sw s7 28(sp)
+
+	la s0 arr # arr.begin()
+	la s1 pred # arr.end(), pred.begin()
+	la s2 pred # pred.end()
+	addi s3 s0 -2 # arr.begin() - 1
+	# s4: main loop counter
+	# s5: digit output
+	# s7: m
+
+	li s4 100
+	li s7 333
+L1: # for _ in range(n)
+	ble s4 zero L1E
+
+
 	li t0 10
-	mul a1 a0 t0
-	li t0 3
-	div a1 a1 t0
-
-	# a = [2] * m
-    li t0 2
-    addi t1 a1 -1
-	slli t1 t1 2
-L0:
-	blt t1 zero L0E
-	sw t0 0x200(t1)
-	addi t1 t1 -4
-	j L0
-L0E:
-	li t6 0
-L1:
-	ble a0 zero L1E
-
-	addi t0 a1 -1
-	li t1 10
-	slli t0 t0 2
-L2:
-	blt t0 zero L2E
-	
-	lw t2 0x200(t0)
-	mul t2 t2 t1
-	sw t2 0x200(t0)
-	addi t0 t0 -4
-	
+	mv t1 s0
+L2: # [x * 10 for x in a]
+	beq t1 s1 L2E
+	lh t2 0(t1)
+	mul t2 t2 t0
+	sh t2 0(t1)
+	addi t1 t1 2
 	j L2
 L2E:
-	addi t0 a1 -1
-	slli t0 t0 2
-L3:
-	ble t0 zero L3E
 
-	lw t1 0x200(t0)
-	srai t2 t0 1
+	addi t0 s7 -1 # t0: i
+	slli t1 t0 1
+	add t1 s0 t1 # t1: a.begin() + i
+L3: # for i in range(m - 1, 0, -1):
+	ble t0 zero L3E
+	lh t5 0(t1)
+	slli t2 t0 1
 	addi t2 t2 1
-	div t3 t1 t2
-	rem t4 t1 t2
-	sw t4 0x200(t0)
+	divu t3 t5 t2
+	remu t4 t5 t2
+	sh t4 0(t1)
 	mul t3 t3 t0
-	srai t3 t3 2
-	lw t4 0x1fc(t0)
+	lh t4 -2(t1)
 	add t3 t3 t4
-	sw t3 0x1fc(t0)
-	addi t0 t0 -4
+	sh t3 -2(t1)
+
+	addi t0 t0 -1
+	addi t1 t1 -2
 
 	j L3
 L3E:
-
-	lw t0 0x200(zero)
+	# d, a[0] = divmod(a[0], 10)
+	lh t0 0(s0)
 	li t1 10
-	div t2 t0 t1
+	divu s5 t0 t1
 	rem t3 t0 t1
-	sw t3 0x200(zero)
+	sh t3 0(s0)
 
 	li t1 8
-	
-	bgt t2 t1 C0
-	mv t0 a1
-	add t1 a1 t6
-L4:
-	bge t0 t1 L4E
-	slli t4 t0 2
-	lw t3 0x200(t4)
-	# FIXME: print t3
-	mv t5 a0
+# C0: if d <= 8
+	bgt s5 t1 C0
+	mv t0 s1 # t0: pred.begin() + i
+L4: # for p in pred:
+	beq t0 s2 L4E
+	lb t3 0(t0)
+
+	# print
 	mv a0 t3
 	li a7 1
 	ecall
-	mv a0 t5	
-	# END print t3
-	addi t0 t0 1	
+
+	addi t0 t0 1
 	j L4
 L4E:
-	li t6 1
-	slli t0 a1 2
-	sw t2 0x200(t0)
+	addi s2 s1 1 # pred.end() = pred.begin() + 1
+	sb s5 0(s1) # pred[0] = d
 	j C0E
 C0:
 	li t0 9
-	bne t2 t0 C1
-	add t1 t6 a1
-	slli t1 t1 2
-	sw t0 0x200(t1)
-	addi t6 t6 1
+	# if d == 9:
+	bne s5 t0 C1
+	sb s5 0(s2)
+	addi s2 s2 1
 	j C1E
 C1:
-	mv t0 a1
-	add t1 a1 t6
-L5:
-	bge t0 t1 L5E
-	slli t4 t0 2
-	lw t2 0x200(t4)
+	mv t0 s1 # t0: pred.begin() + i
+L5: # for p in pred
+	beq t0 s2 L5E
+	lb t2 0(t0)
 	addi t2 t2 1
 	li t3 10
-	rem t2 t2 t3
-	# FIXME: print(t2)
-	mv t5 a0
-	mv a0 t2
+	remu a0 t2 t3
 	li a7 1
 	ecall
-	mv a0 t5
-	# end print t2
 	addi t0 t0 1
 	j L5
 L5E:
-	li t6 1
-	slli t0 a1 2
-	sw zero 0x200(t0)
+	# pred = [0]
+	sb zero 0(s1)
+	addi s2 s1 1
 C1E:
-C0E:	
-	addi a0 a0 -1
+C0E:
+	addi s4 s4 -1
 	j L1
 L1E:
+
+    li a0 100
+	# m = n * 10 / 3
+    li a1 333
+
+
+
+
+	lw s0 0(sp)
+	lw s1 4(sp)
+	lw s2 8(sp)
+	lw s3 12(sp)
+	lw s4 16(sp)
+	lw s5 20(sp)
+	lw s6 24(sp)
+	lw s7 28(sp)
+	addi sp sp 32
+
