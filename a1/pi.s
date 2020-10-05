@@ -67,7 +67,7 @@ L3E:
 	lh t0 0(s0)
 	li t1 10
 	divu s5 t0 t1
-	rem t3 t0 t1
+	remu t3 t0 t1
 	sh t3 0(s0)
 
 	li t1 8
