@@ -8,7 +8,7 @@ src=f'''
 
 .data
 arr: .{elem_name} {', '.join(['2'] * m)}
-pred: .byte {', '.join(['0'] * n)}
+pred: .zero {elem_len * n}
 
 .text
 main:
